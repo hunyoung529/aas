@@ -48,13 +48,13 @@ async function downloadTestPdf(button) {
     for (const page of pages) {
       const { width, height } = page.getSize();
       
-      // Erase the old date by drawing a white rectangle
+      // Erase the old date by drawing a rectangle matching the header's #B8DFFF sky blue color
       page.drawRectangle({
         x: 78,
         y: 715,
         width: 100,
         height: 12,
-        color: PDFLib.rgb(1, 1, 1),
+        color: PDFLib.rgb(184 / 255, 223 / 255, 1.0),
       });
       
       // Draw the new date
