@@ -1,0 +1,16 @@
+{
+  "name": "docx-pdf-generator-server",
+  "version": "1.0.0",
+  "description": "Server to edit docx template and convert to PDF using LibreOffice",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
+    "@pdf-lib/fontkit": "^1.1.1"
+  }
+}
