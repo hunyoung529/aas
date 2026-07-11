@@ -5,8 +5,6 @@ const path = require('path');
 const os = require('os');
 const { exec } = require('child_process');
 const JSZip = require('jszip');
-const { PDFDocument, rgb, degrees } = require('pdf-lib');
-const fontkit = require('@pdf-lib/fontkit');
 
 const app = express();
 app.use(cors());
@@ -104,47 +102,7 @@ app.post('/api/generate-test-report', async (req, res) => {
       throw new Error('Generated PDF file size is invalid.');
     }
     
-    // 4. Embed Watermark using pdf-lib
-    const pdfDoc = await PDFDocument.load(pdfBytes);
-    pdfDoc.registerFontkit(fontkit);
-    
-    // Load custom Korean font to write Korean characters
-    const fontPath = path.join(__dirname, 'fonts', 'NanumGothic-Regular.ttf');
-    if (!fs.existsSync(fontPath)) {
-      throw new Error('Watermark font file not found on server.');
-    }
-    const fontBytes = fs.readFileSync(fontPath);
-    const customFont = await pdfDoc.embedFont(fontBytes);
-    
-    const pages = pdfDoc.getPages();
-    const watermarkText = 'TEST / 비공식 문서';
-    const fontSize = 40;
-    
-    const textWidth = customFont.widthOfTextAtSize(watermarkText, fontSize);
-    const textHeight = customFont.heightAtSize(fontSize);
-    
-    for (const page of pages) {
-      const { width, height } = page.getSize();
-      
-      // Calculate coordinates to draw semi-transparent watermark text in the center
-      const angleRad = 35 * Math.PI / 180;
-      const x = width / 2 - (textWidth / 2) * Math.cos(angleRad);
-      const y = height / 2 - (textHeight / 2);
-      
-      page.drawText(watermarkText, {
-        x,
-        y,
-        size: fontSize,
-        font: customFont,
-        color: rgb(0.7, 0.7, 0.7),
-        opacity: 0.35,
-        rotate: degrees(35)
-      });
-    }
-    
-    const finalPdfBuffer = await pdfDoc.save();
-    
-    // 5. Generate dynamic filename in YYYYMMDD_xxxxxx.pdf format
+    // 4. Generate dynamic filename in YYYYMMDD_xxxxxx.pdf format
     const yyyymmdd = timestamp.split(' ')[0].replace(/-/g, '');
     const randomHex = Math.random().toString(16).substring(2, 8);
     const filename = `${yyyymmdd}_${randomHex}.pdf`;
@@ -152,7 +110,7 @@ app.post('/api/generate-test-report', async (req, res) => {
     // Send response back
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(Buffer.from(finalPdfBuffer));
+    res.send(pdfBytes);
     
   } catch (error) {
     console.error('Error generating report:', error);
