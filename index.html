@@ -2,99 +2,83 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>본인신용정보 열람서비스</title>
   <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; width: 100%; min-height: 100%; background: #fff; font-family: "Malgun Gothic", Arial, sans-serif; color: #222; }
-    #serviceView { display: none; width: 100%; height: 100vh; border: 0; }
-    .login-page { min-height: 100vh; background: #f5f7fa; }
-    .login-header { height: 78px; background: #fff; border-bottom: 1px solid #ddd; display: flex; align-items: center; padding: 0 7%; }
-    .login-logo { font-size: 27px; font-weight: 700; color: #0871c9; letter-spacing: -2px; }
-    .login-logo small { margin-left: 10px; font-size: 14px; font-weight: 400; color: #555; letter-spacing: -1px; }
-    .login-main { max-width: 1080px; margin: 0 auto; padding: 80px 24px; }
-    .login-title { text-align: center; margin: 0 0 45px; font-size: 32px; letter-spacing: -2px; }
-    .login-card { width: 100%; max-width: 520px; margin: 0 auto; padding: 48px 55px 44px; background: #fff; border: 1px solid #ddd; box-shadow: 0 3px 14px rgba(0,0,0,.06); }
-    .login-card h2 { margin: 0 0 30px; text-align: center; font-size: 22px; }
-    .login-field { margin-bottom: 14px; }
-    .login-field label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; }
-    .login-field input { width: 100%; height: 48px; padding: 0 14px; border: 1px solid #aaa; border-radius: 2px; font-size: 16px; outline: none; }
-    .login-field input:focus { border-color: #0071d2; box-shadow: 0 0 0 1px #0071d2; }
-    .login-button { width: 100%; height: 52px; margin-top: 14px; border: 0; border-radius: 2px; background: #0071d2; color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; }
-    .login-button:hover, .login-button:focus { background: #005fae; }
-    .login-button:disabled { background: #8aabc7; cursor: wait; }
-    .login-help { margin: 22px 0 0; text-align: center; font-size: 13px; line-height: 1.6; color: #666; }
-    @media (max-width: 600px) {
-      .login-header { height: 66px; padding: 0 20px; }
-      .login-logo { font-size: 23px; }
-      .login-logo small { display: block; margin: 2px 0 0; font-size: 11px; }
-      .login-main { padding: 48px 18px; }
-      .login-title { font-size: 26px; margin-bottom: 30px; }
-      .login-card { padding: 36px 24px; }
-    }
+    :root{--blue:#0875d1;--navy:#07346d;--line:#ddd;--ink:#171717}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Malgun Gothic",Arial,sans-serif;color:var(--ink);background:#fff}button,input{font:inherit}button,a{cursor:pointer}a{color:inherit;text-decoration:none}
+    .hidden{display:none!important}.site-header{height:78px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 42px;background:#fff;position:relative;z-index:20}
+    .brand{display:flex;align-items:center;min-width:380px;font-size:22px;font-weight:700;letter-spacing:-1.5px}.brand-mark{display:grid;grid-template-columns:repeat(3,9px);gap:2px;margin-right:12px;transform:skewY(-28deg)}.brand-mark i{width:9px;height:18px;background:#0498dc}.brand-mark i:nth-child(2n){background:#006cb7}
+    .main-nav{display:flex;justify-content:space-around;flex:1;font-size:20px;font-weight:700}.main-nav a{padding:25px 18px}.account-nav{min-width:360px;display:flex;justify-content:flex-end;align-items:center;gap:12px;font-size:14px}.account-nav .divider{color:#bbb}.link-button{border:0;background:none;padding:8px 2px}
+    .main-hero{min-height:430px;background:#faf9f6;padding:62px 24px 50px;text-align:center}.main-hero h1{font-size:35px;margin:0 0 18px;letter-spacing:-2px}.main-hero p{font-size:17px;color:#555}.search-box{display:flex;max-width:980px;height:62px;margin:42px auto 0;background:#fff;border:2px solid var(--blue);border-radius:7px;overflow:hidden}.search-box input{flex:1;border:0;padding:0 24px;font-size:17px;outline:none}.search-box button{width:100px;border:0;background:var(--blue);color:#fff;font-weight:700}
+    .service-grid{display:grid;grid-template-columns:1.15fr 1fr 1fr;max-width:1280px;margin:-28px auto 70px;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)}.service-card{min-height:310px;padding:26px 30px;background:#e8f5fb;border-right:10px solid #fff}.service-card:last-child{border-right:0}.service-card h2{font-size:20px;margin:0 0 26px}.service-card ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;margin:0;padding:0;list-style:none}.service-card li{font-size:14px;margin:0 0 18px}.service-card a:hover,.service-card a:focus{color:var(--blue);text-decoration:underline}.service-card li::before{content:"·";margin-right:8px;font-weight:700}.service-card .wide{grid-column:1/-1}
+    .popup-layer{position:fixed;inset:78px 0 0;z-index:1000;pointer-events:none}.notice-popup{position:absolute;top:12px;width:300px;height:538px;background:#fff;border:1px solid #aaa;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:auto;display:flex;flex-direction:column}.notice-popup:nth-child(1){left:10px}.notice-popup:nth-child(2){left:320px}.notice-popup:nth-child(3){left:630px}.notice-popup:nth-child(4){left:940px}.notice-popup:nth-child(5){left:1250px}.notice-image{width:100%;height:463px;object-fit:cover;object-position:top;background:#eef4fa}.popup-foot{margin-top:auto;background:#242424;color:#fff;padding:12px 10px 8px}.popup-check{display:block;font-size:13px;margin-bottom:9px}.popup-actions{display:flex;justify-content:flex-end;gap:6px}.popup-actions button{border:0;border-radius:4px;background:#5b606a;color:#fff;padding:6px 12px;font-weight:700}.popup-actions button:hover{background:#777d88}
+    .login-wrap{min-height:calc(100vh - 78px);padding:82px 24px 70px}.login-columns{display:grid;grid-template-columns:1fr 1fr;gap:76px;max-width:1080px;margin:0 auto}.login-panel{text-align:center}.login-panel h1{font-size:36px;margin:0 0 38px;letter-spacing:-2px}.login-desc{line-height:1.8;font-size:17px;min-height:110px}.login-form{max-width:510px;margin:0 auto;text-align:left}.form-row{display:grid;grid-template-columns:105px 1fr;align-items:center;margin-bottom:10px}.form-row label{font-weight:700}.form-row input{width:100%;height:41px;border:1px solid #aaa;border-radius:4px;padding:0 12px;outline:none}.form-row input:focus{border-color:var(--blue)}.captcha-box{display:grid;grid-template-columns:105px 1fr}.captcha-box>label{font-weight:700;padding-top:16px}.captcha-controls{display:grid;grid-template-columns:1.15fr .9fr;border:1px solid #bbb;border-radius:8px;overflow:hidden}.captcha-code{height:83px;display:flex;align-items:center;justify-content:center;background:linear-gradient(130deg,#aaa,#eee);font:italic 38px Georgia,serif;letter-spacing:-3px;text-decoration:line-through}.captcha-tools{display:grid}.captcha-tools button{border:0;border-left:1px solid #ccc;background:#fafafa;color:#777}.captcha-tools button+button{border-top:1px solid #ccc}.captcha-input{grid-column:2;margin-top:10px}.login-submit{display:block;width:calc(100% - 105px);height:58px;margin:10px 0 0 105px;border:0;border-radius:4px;background:var(--blue);color:#fff;font-size:17px;font-weight:700}.login-submit:hover{background:#0064b4}.login-links{text-align:center;margin:28px 0;font-weight:700}.login-links span{color:#ccc;margin:0 15px}.consult-graphic{width:360px;height:265px;margin:25px auto 20px;border-radius:50%;background:#f1f8fd;position:relative}.consult-screen{position:absolute;left:45px;top:50px;width:275px;height:165px;border:4px solid #60738a;border-radius:10px;background:#eef4fb}.consult-screen::after{content:"✓";position:absolute;left:28px;top:38px;width:58px;height:58px;border:5px solid #45749a;border-radius:50%;font-size:43px;color:var(--blue);font-weight:700;line-height:53px}.consult-screen::before{content:"•••••";position:absolute;right:30px;bottom:23px;border:2px solid #60738a;border-radius:6px;padding:4px 13px;font-size:21px;letter-spacing:2px}.guest-button{width:100%;height:58px;border:0;border-radius:4px;background:var(--blue);color:#fff;font-weight:700;font-size:17px}.login-note{max-width:1080px;margin:10px auto 0;border:1px solid #ddd;background:#fafafa;padding:28px 50px;font-size:13px;line-height:1.8}
+    #appView{display:none;width:100%;height:100vh;border:0}
+    @media(max-width:1280px){.notice-popup:nth-child(n){position:relative;left:auto;top:auto;flex:0 0 300px}.popup-layer{display:flex;overflow-x:auto;padding:12px 10px;gap:10px}}@media(max-width:900px){.site-header{padding:0 18px}.brand{min-width:0}.brand span:last-child{display:none}.main-nav{display:none}.account-nav{min-width:0;margin-left:auto}.service-grid,.login-columns{grid-template-columns:1fr}.service-card{border-right:0;border-bottom:8px solid #fff}.login-columns{gap:55px}.login-wrap{padding-top:45px}}@media(max-width:560px){.account-nav .optional{display:none}.login-panel h1{font-size:30px}.form-row,.captcha-box{grid-template-columns:1fr}.form-row label,.captcha-box>label{padding:0;margin-bottom:7px}.captcha-input{grid-column:1}.login-submit{width:100%;margin-left:0}.service-card ul{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <section id="loginPage" class="login-page">
-    <header class="login-header">
-      <div class="login-logo">Credit4U <small>본인신용정보 열람서비스</small></div>
+  <div id="siteShell">
+    <header class="site-header">
+      <a class="brand" href="#" id="brandHome"><span class="brand-mark"><i></i><i></i><i></i><i></i><i></i><i></i></span><span>본인신용정보 열람서비스</span></a>
+      <nav class="main-nav"><a href="#">일반신용정보</a><a href="#">보험신용정보</a><a href="#">기업신용정보</a><a href="#">이용안내</a></nav>
+      <div class="account-nav" id="loggedOutNav"><button class="link-button" id="openLogin">↪&nbsp; 개인로그인</button><span class="divider">|</span><a href="#" class="optional">♙&nbsp; 회원가입</a></div>
+      <div class="account-nav hidden" id="loggedInNav"><a href="#">♙&nbsp; 회원정보 (열람)</a><span class="divider">|</span><button class="link-button" id="logout">↪&nbsp; 로그아웃</button><span class="divider optional">|</span><span class="optional">◷&nbsp; 10:00 연장</span></div>
     </header>
-    <main class="login-main">
-      <h1 class="login-title">로그인</h1>
-      <form id="loginForm" class="login-card" autocomplete="on">
-        <h2>아이디 로그인</h2>
-        <div class="login-field">
-          <label for="loginId">아이디</label>
-          <input id="loginId" name="username" type="text" autocomplete="username" required autofocus>
-        </div>
-        <div class="login-field">
-          <label for="loginPassword">비밀번호</label>
-          <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
-        </div>
-        <button id="loginButton" class="login-button" type="submit">로그인</button>
-        <p class="login-help">아이디와 비밀번호를 입력해 주세요.<br>개인정보 보호를 위해 공용 PC에서는 사용 후 창을 닫아주세요.</p>
-      </form>
+
+    <main id="mainPage">
+      <section class="main-hero"><h1>본인신용정보 열람서비스</h1><p>안전하고 편리하게 나의 신용정보를 확인하세요.</p><div class="search-box"><input type="search" placeholder="궁금한 내용을 검색해보세요"><button type="button">검색</button></div></section>
+      <section class="service-grid">
+        <article class="service-card"><h2>일반신용정보</h2><ul><li class="wide"><a href="#" data-page="summary">신용정보 등록현황</a></li><li><a href="#" data-page="rating">신용도판단정보</a></li><li><a href="#" data-page="public">공공정보</a></li><li><a href="#" data-page="loan">개인대출정보</a></li><li><a href="#" data-page="opening">개설·발급정보</a></li><li><a href="#" data-page="debt">채무보증정보</a></li><li>채권자 변동정보</li><li>개인회생 신청 등 정보</li><li>대출채권소각정보</li><li>신용정보 제공내역</li><li>방송통신연체정보</li><li>안심차단정보</li></ul></article>
+        <article class="service-card"><h2>보험신용정보</h2><ul><li>보험계약현황</li><li>정액형보험</li><li>실손형보험</li><li>실손지급내역</li><li>화재특종(배상/재물)보험</li><li>자동차보험</li><li>저축성보험</li><li>보험신용정보 제공내역</li></ul></article>
+        <article class="service-card"><h2>기업신용정보</h2><ul><li>기업신용정보조회서</li><li>신용공여정보</li><li>한도정보</li><li>담보정보</li><li>법인채무보증정보</li><li>카드거래정보</li></ul></article>
+      </section>
     </main>
-  </section>
-  <iframe id="serviceView" title="신용정보 등록현황"></iframe>
+
+    <main id="loginPage" class="login-wrap hidden">
+      <div class="login-columns">
+        <section class="login-panel"><h1>회원 로그인</h1><p class="login-desc">금융소비자의 소중한 개인(신용)정보 보호를 위하여<br><b>주민등록번호 등을 입력하고 회원으로 가입한 경우에만</b><br>본인신용정보를 열람하실 수 있습니다.</p>
+          <form class="login-form" id="loginForm">
+            <div class="form-row"><label for="loginId">아이디</label><input id="loginId" autocomplete="username" required></div>
+            <div class="form-row"><label for="loginPassword">비밀번호</label><input id="loginPassword" type="password" autocomplete="current-password" required></div>
+            <div class="captcha-box"><label for="captchaInput">보안문자</label><div class="captcha-controls"><div class="captcha-code" id="captchaCode" aria-label="보안문자"></div><div class="captcha-tools"><button type="button" id="refreshCaptcha">↻&nbsp; 새로고침</button><button type="button" id="speakCaptcha">◁&nbsp; 음성으로 듣기</button></div></div><input class="captcha-input" id="captchaInput" inputmode="numeric" placeholder="이미지에 보이는 문자를 입력해 주세요" required></div>
+            <button class="login-submit" type="submit">로그인</button>
+          </form>
+          <div class="login-links">아이디 찾기 <span>|</span> 비밀번호 찾기 <span>|</span> 회원가입</div>
+        </section>
+        <section class="login-panel"><h1>신용정보 상담 및 제안</h1><p class="login-desc">회원가입 없이 상담서비스 이용<br>(본인신용정보 열람 불가)</p><div class="consult-graphic"><div class="consult-screen"></div></div><button class="guest-button" type="button">비회원 로그인</button></section>
+      </div>
+      <div class="login-note">본인명의 휴대폰, 공동인증서가 없는 경우 본인신용정보조회를 할 수 없으므로 우편조회나 방문조회를 이용하시기 바랍니다.<br>공동인증서는 금융결제원에서 발급받은 용도제한용 및 범용공동인증서와 한국정보인증, 한국전자인증, 코스콤에서 발급받은 범용 공동인증서만 사용할 수 있습니다.</div>
+    </main>
+  </div>
+
+  <div class="popup-layer" id="popupLayer">
+    <article class="notice-popup"><img class="notice-image" src="https://www.credit4u.or.kr:2443/downloadPopup.do?fileParam1=304&amp;fileParam2=A" alt="회원가입 시 구글 메일 등 이용제한 안내"><div class="popup-foot"><label class="popup-check"><input type="checkbox"> 오늘 하루 그만보기</label><div class="popup-actions"><button class="close-one">[닫기]</button><button class="close-all">[전체팝업 닫기]</button></div></div></article>
+    <article class="notice-popup"><img class="notice-image" src="https://www.credit4u.or.kr:2443/downloadPopup.do?fileParam1=298&amp;fileParam2=A" alt="금융사기 주의 안내"><div class="popup-foot"><label class="popup-check"><input type="checkbox"> 오늘 하루 그만보기</label><div class="popup-actions"><button class="close-one">[닫기]</button><button class="close-all">[전체팝업 닫기]</button></div></div></article>
+    <article class="notice-popup"><img class="notice-image" src="https://www.credit4u.or.kr:2443/downloadPopup.do?fileParam1=301&amp;fileParam2=A" alt="한국신용정보원 사칭 피싱 주의 안내"><div class="popup-foot"><label class="popup-check"><input type="checkbox"> 오늘 하루 그만보기</label><div class="popup-actions"><button class="close-one">[닫기]</button><button class="close-all">[전체팝업 닫기]</button></div></div></article>
+    <article class="notice-popup"><img class="notice-image" src="https://www.credit4u.or.kr:2443/downloadPopup.do?fileParam1=302&amp;fileParam2=A" alt="보험신용정보 서비스 일시 중단 안내"><div class="popup-foot"><label class="popup-check"><input type="checkbox"> 오늘 하루 그만보기</label><div class="popup-actions"><button class="close-one">[닫기]</button><button class="close-all">[전체팝업 닫기]</button></div></div></article>
+    <article class="notice-popup"><img class="notice-image" src="https://www.credit4u.or.kr:2443/downloadPopup.do?fileParam1=305&amp;fileParam2=A" alt="신용정보조회서 발급 편의성 개선 안내"><div class="popup-foot"><label class="popup-check"><input type="checkbox"> 오늘 하루 그만보기</label><div class="popup-actions"><button class="close-one">[닫기]</button><button class="close-all">[전체팝업 닫기]</button></div></div></article>
+  </div>
+  <iframe id="appView" title="신용정보 등록현황"></iframe>
+
   <script>
-    const ALLOWED_ID = "gnsdud92";
-    const ALLOWED_PASSWORD_HASH = "1ff0f1b30b31a2b15e885789dd1b464d1abbf0f94c664b0c10cd3ecf9353eb8f";
-
-    async function sha256(value) {
-      const bytes = new TextEncoder().encode(value);
-      const digest = await crypto.subtle.digest("SHA-256", bytes);
-      return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
-    }
-
-    document.getElementById("loginForm").addEventListener("submit", async event => {
-      event.preventDefault();
-
-      const button = document.getElementById("loginButton");
-      const id = document.getElementById("loginId").value;
-      const password = document.getElementById("loginPassword").value;
-      button.disabled = true;
-
-      try {
-        const passwordHash = await sha256(password);
-        if (id !== ALLOWED_ID || passwordHash !== ALLOWED_PASSWORD_HASH) {
-          alert("아이디나 비밀번호를 확인해주세요");
-          document.getElementById("loginPassword").value = "";
-          document.getElementById("loginPassword").focus();
-          return;
-        }
-
-        const serviceView = document.getElementById("serviceView");
-        document.getElementById("loginPage").style.display = "none";
-        serviceView.src = "app.html";
-        serviceView.style.display = "block";
-      } catch (error) {
-        console.error("Login verification failed:", error);
-        alert("로그인 처리 중 오류가 발생했습니다");
-      } finally {
-        button.disabled = false;
-      }
-    });
+    const ALLOWED_ID="gnsdud92",ALLOWED_PASSWORD_HASH="1ff0f1b30b31a2b15e885789dd1b464d1abbf0f94c664b0c10cd3ecf9353eb8f";
+    let captcha="";
+    const $=id=>document.getElementById(id);
+    async function sha256(value){const bytes=new TextEncoder().encode(value),digest=await crypto.subtle.digest("SHA-256",bytes);return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join("")}
+    function makeCaptcha(){captcha=String(Math.floor(100000+Math.random()*900000));$("captchaCode").textContent=captcha;$("captchaInput").value=""}
+    function showMain(){ $("mainPage").classList.remove("hidden");$("loginPage").classList.add("hidden");window.scrollTo(0,0) }
+    function showLogin(){ $("popupLayer").classList.add("hidden");$("mainPage").classList.add("hidden");$("loginPage").classList.remove("hidden");$("appView").style.display="none";$("siteShell").classList.remove("hidden");makeCaptcha();window.scrollTo(0,0) }
+    function openApp(page){if(!$("loggedInNav").classList.contains("hidden")){$("siteShell").classList.add("hidden");$("popupLayer").classList.add("hidden");$("appView").src="app.html#"+page;$("appView").style.display="block"}else showLogin()}
+    document.querySelectorAll(".close-one").forEach(button=>button.addEventListener("click",()=>button.closest(".notice-popup").remove()));
+    document.querySelectorAll(".close-all").forEach(button=>button.addEventListener("click",()=>$("popupLayer").classList.add("hidden")));
+    $("openLogin").addEventListener("click",showLogin);$("brandHome").addEventListener("click",event=>{event.preventDefault();showMain()});
+    $("refreshCaptcha").addEventListener("click",makeCaptcha);
+    $("speakCaptcha").addEventListener("click",()=>{if("speechSynthesis" in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(captcha.split("").join(" ")))}});
+    document.querySelectorAll("[data-page]").forEach(link=>link.addEventListener("click",event=>{event.preventDefault();openApp(link.dataset.page)}));
+    $("loginForm").addEventListener("submit",async event=>{event.preventDefault();const id=$("loginId").value,password=$("loginPassword").value,answer=$("captchaInput").value.trim();if(answer!==captcha){alert("보안문자를 확인해주세요");makeCaptcha();$("captchaInput").focus();return}if(id!==ALLOWED_ID||await sha256(password)!==ALLOWED_PASSWORD_HASH){alert("아이디나 비밀번호를 확인해주세요");$("loginPassword").value="";makeCaptcha();$("loginPassword").focus();return}$("loggedOutNav").classList.add("hidden");$("loggedInNav").classList.remove("hidden");showMain()});
+    $("logout").addEventListener("click",()=>{$("loggedInNav").classList.add("hidden");$("loggedOutNav").classList.remove("hidden");$("loginForm").reset();showMain()});
   </script>
 </body>
 </html>
