@@ -8,26 +8,15 @@ async function downloadTestPdf(button) {
     button.textContent = "PDF 생성 중...";
     
     const pdfUrl = new URL('092334_aqbnbc.pdf', window.location.href).href;
-    const fontUrl = new URL('server/fonts/NanumGothic-Regular.ttf', window.location.href).href;
+    const pdfRes = await fetch(pdfUrl);
     
-    const [pdfRes, fontRes] = await Promise.all([
-      fetch(pdfUrl),
-      fetch(fontUrl)
-    ]);
-    
-    if (!pdfRes.ok || !fontRes.ok) {
-      throw new Error('PDF 템플릿 또는 폰트 파일을 가져오지 못했습니다.');
+    if (!pdfRes.ok) {
+      throw new Error('PDF 템플릿 파일을 가져오지 못했습니다.');
     }
     
-    const [pdfBytes, fontBytes] = await Promise.all([
-      pdfRes.arrayBuffer(),
-      fontRes.arrayBuffer()
-    ]);
+    const pdfBytes = await pdfRes.arrayBuffer();
     
     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-    pdfDoc.registerFontkit(fontkit);
-    
-    const customFont = await pdfDoc.embedFont(fontBytes);
     const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
     
     const formatter = new Intl.DateTimeFormat('sv-SE', {
@@ -46,8 +35,6 @@ async function downloadTestPdf(button) {
     const pages = pdfDoc.getPages();
     
     for (const page of pages) {
-      const { width, height } = page.getSize();
-      
       // Erase the old date by drawing a rectangle matching the header's #B8DFFF sky blue color
       page.drawRectangle({
         x: 78,
@@ -66,25 +53,6 @@ async function downloadTestPdf(button) {
         color: PDFLib.rgb(0.247, 0.247, 0.247), // color code 3F3F3F = 0.247
       });
       
-      // Draw the watermark: "TEST / 비공식 문서"
-      const watermarkText = 'TEST / 비공식 문서';
-      const fontSize = 40;
-      const textWidth = customFont.widthOfTextAtSize(watermarkText, fontSize);
-      const textHeight = customFont.heightAtSize(fontSize);
-      
-      const angleRad = 35 * Math.PI / 180;
-      const x = width / 2 - (textWidth / 2) * Math.cos(angleRad);
-      const y = height / 2 - (textHeight / 2);
-      
-      page.drawText(watermarkText, {
-        x,
-        y,
-        size: fontSize,
-        font: customFont,
-        color: PDFLib.rgb(0.7, 0.7, 0.7),
-        opacity: 0.35,
-        rotate: PDFLib.degrees(35),
-      });
     }
     
     const finalPdfBytes = await pdfDoc.save();
