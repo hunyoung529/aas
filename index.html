@@ -64,21 +64,29 @@
 
   <script>
     const ALLOWED_ID="gnsdud92",ALLOWED_PASSWORD_HASH="1ff0f1b30b31a2b15e885789dd1b464d1abbf0f94c664b0c10cd3ecf9353eb8f";
+    const SESSION_KEY="credit4u_session_expires",SESSION_DURATION=10*60*1000;
+    let sessionTimer;
     let captcha="";
     const $=id=>document.getElementById(id);
     async function sha256(value){const bytes=new TextEncoder().encode(value),digest=await crypto.subtle.digest("SHA-256",bytes);return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,"0")).join("")}
     function makeCaptcha(){captcha=String(Math.floor(100000+Math.random()*900000));$("captchaCode").textContent=captcha;$("captchaInput").value=""}
+    function isSessionValid(){const expires=Number(localStorage.getItem(SESSION_KEY));if(!expires||expires<=Date.now()){localStorage.removeItem(SESSION_KEY);return false}return true}
+    function setLoginState(isLoggedIn){$("loggedOutNav").classList.toggle("hidden",isLoggedIn);$("loggedInNav").classList.toggle("hidden",!isLoggedIn)}
+    function scheduleSessionExpiry(){clearTimeout(sessionTimer);const expires=Number(localStorage.getItem(SESSION_KEY));if(expires>Date.now())sessionTimer=setTimeout(()=>{localStorage.removeItem(SESSION_KEY);setLoginState(false);$("loginForm").reset();showLogin()},expires-Date.now())}
+    function startSession(){localStorage.setItem(SESSION_KEY,String(Date.now()+SESSION_DURATION));setLoginState(true);scheduleSessionExpiry()}
+    function endSession(){clearTimeout(sessionTimer);localStorage.removeItem(SESSION_KEY);setLoginState(false)}
     function showMain(){ $("mainPage").classList.remove("hidden");$("loginPage").classList.add("hidden");window.scrollTo(0,0) }
     function showLogin(){ $("popupLayer").classList.add("hidden");$("mainPage").classList.add("hidden");$("loginPage").classList.remove("hidden");$("appView").style.display="none";$("siteShell").classList.remove("hidden");makeCaptcha();window.scrollTo(0,0) }
-    function openApp(page){if(!$("loggedInNav").classList.contains("hidden")){$("siteShell").classList.add("hidden");$("popupLayer").classList.add("hidden");$("appView").src="app.html#"+page;$("appView").style.display="block"}else showLogin()}
+    function openApp(page){if(isSessionValid()){$("siteShell").classList.add("hidden");$("popupLayer").classList.add("hidden");$("appView").src="app.html#"+page;$("appView").style.display="block"}else{endSession();showLogin()}}
     document.querySelectorAll(".close-one").forEach(button=>button.addEventListener("click",()=>button.closest(".notice-popup").remove()));
     document.querySelectorAll(".close-all").forEach(button=>button.addEventListener("click",()=>$("popupLayer").classList.add("hidden")));
     $("openLogin").addEventListener("click",showLogin);$("brandHome").addEventListener("click",event=>{event.preventDefault();showMain()});
     $("refreshCaptcha").addEventListener("click",makeCaptcha);
     $("speakCaptcha").addEventListener("click",()=>{if("speechSynthesis" in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(captcha.split("").join(" ")))}});
     document.querySelectorAll("[data-page]").forEach(link=>link.addEventListener("click",event=>{event.preventDefault();openApp(link.dataset.page)}));
-    $("loginForm").addEventListener("submit",async event=>{event.preventDefault();const id=$("loginId").value,password=$("loginPassword").value,answer=$("captchaInput").value.trim();if(answer!==captcha){alert("보안문자를 확인해주세요");makeCaptcha();$("captchaInput").focus();return}if(id!==ALLOWED_ID||await sha256(password)!==ALLOWED_PASSWORD_HASH){alert("아이디나 비밀번호를 확인해주세요");$("loginPassword").value="";makeCaptcha();$("loginPassword").focus();return}$("loggedOutNav").classList.add("hidden");$("loggedInNav").classList.remove("hidden");showMain()});
-    $("logout").addEventListener("click",()=>{$("loggedInNav").classList.add("hidden");$("loggedOutNav").classList.remove("hidden");$("loginForm").reset();showMain()});
+    $("loginForm").addEventListener("submit",async event=>{event.preventDefault();const id=$("loginId").value,password=$("loginPassword").value,answer=$("captchaInput").value.trim();if(answer!==captcha){alert("보안문자를 확인해주세요");makeCaptcha();$("captchaInput").focus();return}if(id!==ALLOWED_ID||await sha256(password)!==ALLOWED_PASSWORD_HASH){alert("아이디나 비밀번호를 확인해주세요");$("loginPassword").value="";makeCaptcha();$("loginPassword").focus();return}startSession();showMain()});
+    $("logout").addEventListener("click",()=>{endSession();$("loginForm").reset();showMain()});
+    if(isSessionValid()){setLoginState(true);scheduleSessionExpiry()}else setLoginState(false);
   </script>
 </body>
 </html>
